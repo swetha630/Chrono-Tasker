@@ -1,40 +1,38 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function Pomodoro() {
-    const [time, setTime] = useState(25 * 60);
+function Pomodoro() {
+    const [timeLeft, setTimeLeft] = useState(25 * 60);
     const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
-        let interval;
-        if (isRunning) {
-            interval = setInterval(() => {
-                setTime(prevTime => (prevTime > 0 ? prevTime - 1 : 0));
-            }, 1000);
-        } else {
-            clearInterval(interval);
+        let timer;
+        if (isRunning && timeLeft > 0) {
+            timer = setInterval(() => setTimeLeft(timeLeft - 1), 1000);
         }
-        return () => clearInterval(interval);
-    }, [isRunning]);
+        return () => clearInterval(timer);
+    }, [isRunning, timeLeft]);
 
+    const toggleTimer = () => setIsRunning(!isRunning);
     const resetTimer = () => {
-        setTime(25 * 60);
         setIsRunning(false);
+        setTimeLeft(25 * 60);
     };
 
-    const formatTime = () => {
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     };
 
     return (
-        <div>
-            <h2>🍅 Pomodoro Timer</h2>
-            <h1>{formatTime()}</h1>
-            <button onClick={() => setIsRunning(!isRunning)}>
-                {isRunning ? "Pause" : "Start"}
-            </button>
+        <div className="timer">
+            <h2>Pomodoro Timer</h2>
+            <h3>{formatTime(timeLeft)}</h3>
+            <button onClick={toggleTimer}>{isRunning ? "Pause" : "Start"}</button>
             <button onClick={resetTimer}>Reset</button>
         </div>
     );
 }
+
+export default Pomodoro;
+

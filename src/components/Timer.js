@@ -1,71 +1,35 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const Timer = () => {
-    const [time, setTime] = useState("00:00:00"); // Store time as HH:MM:SS format
-    const [isActive, setIsActive] = useState(false);
-
-    // Parse the time string to hours, minutes, and seconds
-    const parseTime = (timeString) => {
-        const [hours, minutes, seconds] = timeString.split(":").map((part) => parseInt(part, 10));
-        return { hours, minutes, seconds };
-    };
+function Timer() {
+    const [seconds, setSeconds] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
-        let interval;
-
-        if (isActive) {
-            interval = setInterval(() => {
-                // Parse the time string to get hours, minutes, and seconds
-                const { hours, minutes, seconds } = parseTime(time);
-
-                if (seconds > 0) {
-                    setTime(`${hours}:${minutes}:${seconds - 1}`);
-                } else if (minutes > 0) {
-                    setTime(`${hours}:${minutes - 1}:59`);
-                } else if (hours > 0) {
-                    setTime(`${hours - 1}:59:59`);
-                } else {
-                    clearInterval(interval);
-                    setIsActive(false); // Stop timer when time is up
-                }
-            }, 1000);
+        let interval = null;
+        if (isRunning) {
+            interval = setInterval(() => setSeconds((s) => s + 1), 1000);
         } else {
             clearInterval(interval);
         }
-
         return () => clearInterval(interval);
-    }, [isActive, time]); // Only depend on `time` and `isActive`
+    }, [isRunning]);
 
-    const startTimer = () => setIsActive(true);
-    const pauseTimer = () => setIsActive(false);
-    const resetTimer = () => {
-        setIsActive(false);
-        setTime("00:00:00"); // Reset time to "00:00:00"
-    };
-
-    const handleChangeTime = (e) => {
-        const value = e.target.value;
-        // Ensure the input is in HH:MM:SS format
-        if (/^([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})$/.test(value) || value === "") {
-            setTime(value);
-        }
+    const formatTime = (s) => {
+        const mins = Math.floor(s / 60);
+        const secs = s % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     };
 
     return (
         <div className="timer">
-            <h2>Add timer for your task in hrs:min:sec</h2>
-            <input
-                type="text"
-                placeholder="Enter time in HH:MM:SS"
-                value={time}
-                onChange={handleChangeTime}
-            />
-            <h3>{time}</h3> {/* Display time in HH:MM:SS format */}
-            <button onClick={startTimer}>Start</button>
-            <button onClick={pauseTimer}>Pause</button>
-            <button onClick={resetTimer}>Reset</button>
+            <h2>Simple Timer</h2>
+            <h3>{formatTime(seconds)}</h3>
+            <button onClick={() => setIsRunning(true)}>Start</button>
+            <button onClick={() => setIsRunning(false)}>Pause</button>
+            <button onClick={() => setSeconds(0)}>Reset</button>
         </div>
     );
-};
+}
 
 export default Timer;
+

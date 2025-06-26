@@ -1,20 +1,30 @@
-export function requestNotificationPermission() {
-    if ("Notification" in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                console.log("Notifications enabled!");
-            }
-        });
-    }
+import { useEffect } from "react";
+
+function Notifications() {
+    useEffect(() => {
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    const sendNotification = () => {
+        if (Notification.permission === "granted") {
+            new Notification("Chrono Tasker Reminder", {
+                body: "Don't forget to check your tasks and timer!",
+                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png",
+            });
+        } else {
+            alert("Notifications are not enabled. Please allow permission.");
+        }
+    };
+
+    return (
+        <div className="todo-list">
+            <h2>Notifications</h2>
+            <button onClick={sendNotification}>Send Reminder</button>
+        </div>
+    );
 }
 
-export function sendReminder(task, timeInMinutes) {
-    if (Notification.permission === "granted") {
-        setTimeout(() => {
-            new Notification("Task Reminder ⏰", {
-                body: `Don't forget to complete: ${task}`,
-                icon: "/notification-icon.png"
-            });
-        }, timeInMinutes * 60 * 1000);
-    }
-}
+export default Notifications;
+

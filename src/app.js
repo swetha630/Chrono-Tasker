@@ -1,12 +1,13 @@
-import React from "react";
 import DigitalClock from "./components/DigitalClock";
+import GoogleCalendar from "./components/GoogleCalendar";
+import Notifications from "./components/Notifications";
 import Pomodoro from "./components/Pomodoro";
 import StreakTracker from "./components/StreakTracker";
 import Timer from "./components/Timer";
 import TodoList from "./components/TodoList";
-import "./styles.css";
 
-function app() {
+
+function App() {
     return (
         <div className="container">
             <h1>To-Do List with Digital Clock & Timer</h1>
@@ -15,9 +16,10 @@ function app() {
             <TodoList />
             <Pomodoro />
             <StreakTracker />
+            <Notifications />
+            <GoogleCalendar />
         </div>
     );
 }
 
-
-export default app;
+export default App;

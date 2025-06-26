@@ -1,9 +1,36 @@
+function GoogleCalendar() {
+    const [eventTitle, setEventTitle] = useState("");
+    const [eventDetails, setEventDetails] = useState("");
 
-export function addToGoogleCalendar(task, date) {
-    let baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
-    let title = encodeURIComponent(task);
-    let dateTime = new Date(date).toISOString().replace(/-|:|\.\d+/g, ""); // YYYYMMDDT format
+    const addToCalendar = () => {
+        const base = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+        const title = `&text=${encodeURIComponent(eventTitle)}`;
+        const details = `&details=${encodeURIComponent(eventDetails)}`;
+        const url = base + title + details;
 
-    let eventUrl = `${baseUrl}&text=${title}&dates=${dateTime}/${dateTime}&details=Task%20from%20To-Do%20List`;
-    window.open(eventUrl, "_blank");
+        window.open(url, "_blank");
+    };
+
+    return (
+        <div className="todo-list">
+            <h2>Google Calendar</h2>
+            <input
+                type="text"
+                placeholder="Event Title"
+                value={eventTitle}
+                onChange={(e) => setEventTitle(e.target.value)}
+            />
+            <br />
+            <input
+                type="text"
+                placeholder="Event Details"
+                value={eventDetails}
+                onChange={(e) => setEventDetails(e.target.value)}
+            />
+            <br />
+            <button onClick={addToCalendar}>Add to Google Calendar</button>
+        </div>
+    );
 }
+
+export default GoogleCalendar;

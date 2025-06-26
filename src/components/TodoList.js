@@ -1,99 +1,51 @@
-import { useEffect, useState } from "react";
-import { addToGoogleCalendar } from "./GoogleCalendar";
+import React, { useState } from "react";
 
-import { requestNotificationPermission, sendReminder } from "./Notifications";
-import StreakTracker from "./StreakTracker";
-
-const TodoList = () => {
+function TodoList() {
+    const [task, setTask] = useState("");
     const [tasks, setTasks] = useState([]);
-    const [newTask, setNewTask] = useState("");
-    const [reminderTime, setReminderTime] = useState(0); // Minutes for reminder
 
-    // Request notification permission on mount
-    useEffect(() => {
-        requestNotificationPermission();
-    }, []);
-
-    // Load tasks from local storage
-    useEffect(() => {
-        const savedTasks = localStorage.getItem("tasks");
-        if (savedTasks) {
-            setTasks(JSON.parse(savedTasks));
-        }
-    }, []);
-
-    // Save tasks to local storage on change
-    useEffect(() => {
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-    }, [tasks]);
-
-    // Add a new task
     const addTask = () => {
-        if (newTask.trim() !== "") {
-            const taskData = { text: newTask, completed: false, date: new Date().toISOString().split("T")[0] };
-            setTasks([...tasks, taskData]);
-
-            // Send a reminder if time is set
-            if (reminderTime > 0) {
-                sendReminder(newTask, reminderTime);
-            }
-
-            setNewTask("");
-            setReminderTime(0);
+        if (task.trim()) {
+            setTasks([...tasks, { text: task, completed: false }]);
+            setTask("");
         }
     };
 
-    // Toggle task completion
     const toggleComplete = (index) => {
-        const updatedTasks = [...tasks];
-        updatedTasks[index].completed = !updatedTasks[index].completed;
-        setTasks(updatedTasks);
+        const updated = [...tasks];
+        updated[index].completed = !updated[index].completed;
+        setTasks(updated);
     };
 
-    // Remove a task
-    const removeTask = (index) => {
-        const updatedTasks = tasks.filter((_, i) => i !== index);
-        setTasks(updatedTasks);
+    const deleteTask = (index) => {
+        const updated = tasks.filter((_, i) => i !== index);
+        setTasks(updated);
     };
 
     return (
         <div className="todo-list">
             <h2>To-Do List</h2>
-            
-            {/* Task Input */}
             <input
                 type="text"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                placeholder="Enter a task..."
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+                placeholder="Enter a task"
             />
-            
-            {/* Reminder Time Input */}
-            <input
-                type="number"
-                value={reminderTime}
-                onChange={(e) => setReminderTime(Number(e.target.value))}
-                placeholder="Reminder in minutes..."
-                min="0"
-            />
-
-            <button onClick={addTask}>Add Task</button>
-
-            {/* Task List */}
+            <button onClick={addTask}>Add</button>
             <ul>
-                {tasks.map((task, index) => (
-                    <li key={index} className={task.completed ? "completed" : ""}>
-                        <span onClick={() => toggleComplete(index)}>{task.text}</span>
-                        <button onClick={() => removeTask(index)}>❌</button>
-                        <button onClick={() => addToGoogleCalendar(task.text, task.date)}>📅 Google Calendar</button>
+                {tasks.map((t, index) => (
+                    <li key={index} className={t.completed ? "completed" : ""}>
+                        {t.text}
+                        <div>
+                            <button onClick={() => toggleComplete(index)}>✓</button>
+                            <button onClick={() => deleteTask(index)}>✗</button>
+                        </div>
                     </li>
                 ))}
             </ul>
-
-            {/* Streak Tracker */}
-            <StreakTracker />
         </div>
     );
-};
+}
 
 export default TodoList;
+

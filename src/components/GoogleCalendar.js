@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 function GoogleCalendar() {
     const [eventTitle, setEventTitle] = useState("");
     const [eventDetails, setEventDetails] = useState("");
@@ -34,3 +36,4 @@ function GoogleCalendar() {
 }
 
 export default GoogleCalendar;
+
